@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.epicode.entities.Edificio;
@@ -17,11 +18,11 @@ import it.epicode.entities.TipoPostazione;
 @RequestMapping("/prenotazionepostazioni")
 public class PostazioneController {
 
-	@GetMapping("/rules/{parameter}")
-	public String getRules(@PathVariable String parameter) {
-		if (parameter.equals("ita")) {
+	@GetMapping("/rules/{language}")
+	public String getRules(@PathVariable String language) {
+		if (language.equals("it")) {
 			return "Le regole per prenotare una postazione sono... blablabla";
-		} else if (parameter.equals("en")) {
+		} else if (language.equals("en")) {
 			return "The rules for booking a seat are... blablabla";
 		} else {
 			return "Language not supported";
@@ -40,17 +41,18 @@ public class PostazioneController {
 		return listaPostazioni;
 	}
 
-	@GetMapping("/postazioni/{tipoPostazione}")
-	public Optional<Postazione> getPostazioneByTipoPostazione(@PathVariable String tipoPostazione) {
+	@GetMapping("/postazioni/")
+	public Optional<Postazione> getPostazioneByTipoPostazione(@RequestParam(required = true) String tipoPostazione,
+			@RequestParam(required = true) String citta) {
 		List<Postazione> listaPostazioni = getPostazioni();
 		Postazione p = null;
 
 		for (Postazione postazione : listaPostazioni) {
-			if (postazione.getTipoPostazione().toString().equals(tipoPostazione)) {
+			if (postazione.getTipoPostazione().toString().equals(tipoPostazione)
+					&& postazione.getEdificio().getCitta().equals(citta)) {
 				p = postazione;
 			}
 		}
 		return Optional.ofNullable(p);
 	}
-
 }
